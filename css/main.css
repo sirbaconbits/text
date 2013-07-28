@@ -1,0 +1,25 @@
+html, body, input {
+	font-family: monospace;
+}
+
+div#main {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+
+	margin: -17em -32em;
+	width: 64em;
+}
+
+pre#readout {
+	height: 30em;
+}
+
+input#entryLine {
+	width: 100%;
+}
+
+label {
+	float: left;
+	margin: 4pt -10pt;
+}
