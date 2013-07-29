@@ -4,6 +4,8 @@
 
 Implements a temporary display for testing purposes.
 
+This is probably going to be completely scrapped, just FYI. Don't work on anything too hard.
+
 */
 
 (function() {
@@ -55,7 +57,10 @@ Implements a temporary display for testing purposes.
 				type: "text",
 				events: {
 					keypress: function(e) {
-						if (e.key == "enter") this.exec(e.target.value);
+						if (e.key == "enter") {
+							this.exec(e.target.value);
+							e.target.value = "";
+						}
 					}.bind(this)
 				}
 			});
@@ -78,11 +83,13 @@ Implements a temporary display for testing purposes.
 			);
 		},
 
-		print: function(line) {
-			this.log.push(line);
-			this.readout.set("text",
-				this.log.slice(this.options.readoutLength * -1).join("\n")
-			);
+		print: function() {
+			Array.each(arguments, function(line) {
+				this.log.push(line);
+				this.readout.set("text",
+					this.log.slice(this.options.readoutLength * -1).join("\n")
+				);
+			}, this);
 		},
 
 		setWizard: function(value) {
