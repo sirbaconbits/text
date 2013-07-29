@@ -5,6 +5,6 @@ For those wishing to contribute, please check out the "[Design Specification](ht
 
 ## Version History
 
-### v0.0.1
+### v0.0.1 - v0.0.2
 
 Initial work.
