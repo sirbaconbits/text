@@ -9,12 +9,24 @@ evolve with the development of the rest of the project.
 
 window.addEvent("domready", function() {
 
+	// Main display
 	window.co = new Display($("main"), {});
 
+	// Basic command environment
 	var commenv = new CommEnv({
 		"inv": function(args) {
 			co.print("You're a commie. You don't *own* anything.");
+		},
+
+		"look": function(args) {
+			co.print("", mainroom.name, "", mainroom.description);
 		}
+	});
+
+	// Sample entity - Main room
+	var mainroom = new Entity({
+		name: "Main Room",
+		description: "A large room."
 	});
 
 	co.addEvent("command", function(e) {
@@ -24,7 +36,7 @@ window.addEvent("domready", function() {
 		// We'll get rid of it later.
 		switch (e.mode) {
 			case 0:
-				//co.print("command: " + e.command);
+				co.print("$ " + e.command);
 				commenv.exec(e.command);
 				break;
 

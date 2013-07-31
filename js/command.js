@@ -6,9 +6,9 @@ Implements the command environment.
 
 */
 
-(function() {
+(function(global) {
 
-	window.Command = new Class({
+	global.Command = new Class({
 		Implements: [Options, Events],
 
 		options: {},
@@ -23,7 +23,7 @@ Implements the command environment.
 		exec: function() {}
 	});
 
-	window.CommEnv = new Class({
+	global.CommEnv = new Class({
 		Implements: [Events],
 
 		initialize: function(commands) {
@@ -51,4 +51,4 @@ Implements the command environment.
 		}
 	});
 
-})();
+})(this);

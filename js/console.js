@@ -8,7 +8,7 @@ This is probably going to be completely scrapped, just FYI. Don't work on anythi
 
 */
 
-(function() {
+(function(global) {
 
 	var Display = new Class({
 		Implements: [Options, Events],
@@ -55,6 +55,7 @@ This is probably going to be completely scrapped, just FYI. Don't work on anythi
 			this.entryLine = new Element("input", {
 				id: "entryLine",
 				type: "text",
+				autofocus: "autofocus",
 				events: {
 					keypress: function(e) {
 						if (e.key == "enter") {
@@ -100,6 +101,6 @@ This is probably going to be completely scrapped, just FYI. Don't work on anythi
 		}
 	});
 
-	window.Display = Display;
+	global.Display = Display;
 
-})();
+})(this);
