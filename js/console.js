@@ -33,13 +33,16 @@ This is probably going to be completely scrapped, just FYI. Don't work on anythi
 					text: "$",
 					events: {
 						click: function() {
-							this.indicator.mode += 1;
-							if (this.indicator.mode > 2) this.indicator.mode = 0;
-							this.indicator.element.set("text",
-								this.indicator.icon[this.indicator.mode]);
+							this.indicator.next();
 						}.bind(this)
 					}
 				}),
+				next: function() {
+					this.indicator.mode += 1;
+					if (this.indicator.mode > 2) this.indicator.mode = 0;
+					this.indicator.element.set("text",
+						this.indicator.icon[this.indicator.mode]);
+				}.bind(this),
 				draw: function() {
 					this.indicator.element.set("text",
 						this.indicator.icon[this.indicator.mode]);
@@ -71,6 +74,14 @@ This is probably going to be completely scrapped, just FYI. Don't work on anythi
 				this.indicator.element,
 				this.entryLine
 			);
+
+			// Handle keyboard shortcuts even while in text boxes
+			key.filter = function() { return true; };
+
+			key("tab", function(e, h) {
+				e.preventDefault();
+				this.indicator.next();
+			}.bind(this))
 		},
 
 		log: [],
