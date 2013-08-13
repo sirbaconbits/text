@@ -13,18 +13,21 @@ window.addEvent("domready", function() {
 	window.co = new Display($("main"), {});
 
 	// Basic command environment
-	var commenv = new CommEnv({
+	window.commenv = new CommEnv({
 		"inv": function(args) {
 			co.print("You're a commie. You don't *own* anything.");
 		},
 
 		"look": function(args) {
-			co.print("", mainroom.name, "", mainroom.description);
+			co.print("", mainroom.get("name"), "", mainroom.get("description"));
 		}
 	});
 
+	// Environment
+	window.env = new Environment({});
+
 	// Sample entity - Main room
-	var mainroom = new Entity({
+	var mainroom = new Environment.Room({
 		name: "Main Room",
 		description: "A large room."
 	});
@@ -33,7 +36,7 @@ window.addEvent("domready", function() {
 		console.log(e.mode + ": " + e.command);
 
 		// I know. Eww. A switch statement. Sue me.
-		// We'll get rid of it later.
+		// We'll get rid of it later when we redo the interface.
 		switch (e.mode) {
 			case 0:
 				co.print("$ " + e.command);
@@ -55,4 +58,4 @@ window.addEvent("domready", function() {
 
 	// Welcome message - YAY!
 	co.print("Welcome to <=text=>", "");
-});
+}.bind(this));

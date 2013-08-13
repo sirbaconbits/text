@@ -40,6 +40,10 @@ Implements the command environment.
 			});
 		},
 
+		rmCommand: function(command) {
+			delete this.commands[command];
+		},
+
 		commands: {},
 		commandcontexts: {},
 
