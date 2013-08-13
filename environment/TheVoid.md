@@ -17,7 +17,7 @@ Suddenly, you look down. You see a hole. Maybe you can get out through it.
 
 ## Exits
 
-Down, Out - <next room>
+Down, Out - < next room >
 
 ## Flags
 
