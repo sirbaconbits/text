@@ -19,8 +19,16 @@ This implements the "environment" class which contains, well, the environment.
 			// Meh.
 		},
 
-		new: function(options) {
-			console.log("Yay!");
+		create: function(options) {
+			return new Environment[options.type]();
+		},
+
+		load: function(id, sc) {
+			sc = sc || this.options.sc;
+
+			sc.load(id, function(data) {
+				this.env[id] = this.create(data);
+			}.bind(this));
 		},
 
 		env: []

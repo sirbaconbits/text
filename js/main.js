@@ -9,6 +9,9 @@ evolve with the development of the rest of the project.
 
 window.addEvent("domready", function() {
 
+	// Server Communication
+	window.sc = new ServerComm({});
+
 	// Main display
 	window.co = new Display($("main"), {});
 
@@ -19,12 +22,13 @@ window.addEvent("domready", function() {
 		},
 
 		"look": function(args) {
-			co.print("", mainroom.get("name"), "", mainroom.get("description"));
+			co.print("", mainroom.get("name"), new Array(mainroom.get("name").length + 1).join("="), "", mainroom.get("description"), "");
 		}
 	});
 
 	// Environment
-	window.env = new Environment({});
+	window.env = new Environment({ sc: sc });
+	env.load(0);
 
 	// Sample entity - Main room
 	var mainroom = new Environment.Room({
@@ -58,4 +62,21 @@ window.addEvent("domready", function() {
 
 	// Welcome message - YAY!
 	co.print("Welcome to <=text=>", "");
+
+	// Extract hostname just because
+	var hostname = document.URL.split("/")[2];
+	var n = hostname.lastIndexOf(":");
+	hostname = hostname.substring(0, n != -1 ? n : hostname.length)
+
+	// WEBSOCKETS!!!
+	var ws = new WebSocket("ws://" + hostname + ":9001/client");
+	ws.onopen = function() {
+		console.log("Connected.");
+	};
+	ws.onmessage = function(e) {
+		console.log("Server: " + e.data)
+		ws.send("Pong!");
+	};
+	ws.onclose = function() {};
+
 }.bind(this));
