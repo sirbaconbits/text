@@ -22,23 +22,17 @@ window.addEvent("domready", function() {
 		},
 
 		"look": function(args) {
-			co.print("", mainroom.get("name"), new Array(mainroom.get("name").length + 1).join("="), "", mainroom.get("description"), "");
+			co.print("", mainroom.get("name"), new Array(mainroom.get("name").length + 1).join("="), "", mainroom.get("desc"), "");
 		}
 	});
 
 	// Environment
 	window.env = new Environment({ sc: sc });
-	env.load(0);
 
-	// Sample entity - Main room
-	var mainroom = new Environment.Room({
-		name: "Main Room",
-		description: "A large room."
-	});
+	// Temporary starting location
+	var mainroom = env.get(0);
 
 	co.addEvent("command", function(e) {
-		console.log(e.mode + ": " + e.command);
-
 		// I know. Eww. A switch statement. Sue me.
 		// We'll get rid of it later when we redo the interface.
 		switch (e.mode) {
@@ -62,21 +56,5 @@ window.addEvent("domready", function() {
 
 	// Welcome message - YAY!
 	co.print("Welcome to <=text=>", "");
-
-	// Extract hostname just because
-	var hostname = document.URL.split("/")[2];
-	var n = hostname.lastIndexOf(":");
-	hostname = hostname.substring(0, n != -1 ? n : hostname.length)
-
-	// WEBSOCKETS!!!
-	var ws = new WebSocket("ws://" + hostname + ":9001/client");
-	ws.onopen = function() {
-		console.log("Connected.");
-	};
-	ws.onmessage = function(e) {
-		console.log("Server: " + e.data)
-		ws.send("Pong!");
-	};
-	ws.onclose = function() {};
 
 }.bind(this));

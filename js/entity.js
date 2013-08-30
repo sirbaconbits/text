@@ -10,6 +10,7 @@ Depends on environment.js
 
 (function(global) {
 
+	// {{{ Base entity class
 	global.Environment.Entity = new Class({
 		Implements: [Options, Events],
 
@@ -17,11 +18,11 @@ Depends on environment.js
 
 			// Strings
 			name: "",
-			description: "",
+			desc: "",
 			succ: "",
-			osucc: "",
+			osuc: "",
 			fail: "",
-			ofail: "",
+			ofai: "",
 
 			// IDs
 			selfID: -1,
@@ -54,28 +55,31 @@ Depends on environment.js
 		set: function(key, value) {
 			return this.options[key] = value;
 		}
-	});
+	}); // }}}
 
 
 	//==-- BASIC ENTITIES
 
+	// {{{ Object class
 	global.Environment.Object = new Class({
 		Extends: global.Environment.Entity,
 
 		initialize: function(options) {
 			this.parent(options);
 		}
-	});
+	}); // }}}
 
-	// Note: Room is just syntactic sugar. It's an object that you see from inside.
+	// {{{ Room class
 	global.Environment.Room = new Class({
+		// Note: Room is just syntactic sugar. It's an object that you see from inside.
 		Extends: global.Environment.Entity,
 
 		initialize: function(options) {
 			this.parent(options);
 		}
-	});
+	}); // }}}
 
+	// {{{ Exit class
 	global.Environment.Exit = new Class({
 		Extends: global.Environment.Entity,
 
@@ -83,8 +87,9 @@ Depends on environment.js
 			this.parent(options);
 			this.options.exit = true;
 		}
-	});
+	}); // }}}
 
+	// {{{ Player class
 	global.Environment.Player = new Class({
 		Extends: global.Environment.Entity,
 
@@ -92,6 +97,6 @@ Depends on environment.js
 			this.parent(options);
 			this.options.player = true;
 		}
-	});
+	}); // }}}
 
 })(this);

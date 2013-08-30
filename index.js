@@ -7,6 +7,7 @@ Modification is only recommended if you actually know what you're doing.
 
 */
 
+// {{{ Dependencies and Initialization
 var url = require("url");
 
 var stat = require("node-static");
@@ -17,13 +18,13 @@ var r = redis.createClient();
 
 var ws = require("ws");
 var wss = new ws.Server({ port: 9001 });
+// }}}
 
 exports.handle = function(req, res, _404, postdata) {
 	var path = url.parse(req.url).pathname.split("/");
 
 	if (path[1] == "env") {
-
-		// Environment REST API ====----
+		// {{{ Environment REST API
 
 		path = path.slice(2);
 		var id = path[0];
@@ -50,20 +51,25 @@ exports.handle = function(req, res, _404, postdata) {
 
 			// TODO CORS
 			res.end(JSON.stringify(obj));
-		});
-
+		}); // }}}
 	} else {
-
-		// Serve static file
+		// {{{ Serve static file
 		serv.serve(req, res, function(e) {
 			if (e && (e.status === 404)) { _404(req, res); };
-		});
+		}); // }}}
 	}
 };
 
-wss.on('connection', function(sock) {
-    sock.on('message', function(message) {
-        console.log('received: %s', message);
+// {{{ WebSockets
+wss.on('connection', function(s) {
+    s.on('message', function(m) {
+	console.log(m);
+	try {
+		var d = JSON.parse(m);
+	} catch (e) {
+		s.send('{"type":"error"}');
+	}
     });
-    sock.send('something');
-});
+
+    s.send('{"type":"ping"}');
+}); // }}}
