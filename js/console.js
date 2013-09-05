@@ -4,9 +4,11 @@
 
 Implements a temporary display for testing purposes.
 
+This is probably going to be completely scrapped, just FYI. Don't work on anything too hard.
+
 */
 
-(function() {
+(function(global) {
 
 	var Display = new Class({
 		Implements: [Options, Events],
@@ -31,13 +33,16 @@ Implements a temporary display for testing purposes.
 					text: "$",
 					events: {
 						click: function() {
-							this.indicator.mode += 1;
-							if (this.indicator.mode > 2) this.indicator.mode = 0;
-							this.indicator.element.set("text",
-								this.indicator.icon[this.indicator.mode]);
+							this.indicator.next();
 						}.bind(this)
 					}
 				}),
+				next: function() {
+					this.indicator.mode += 1;
+					if (this.indicator.mode > 2) this.indicator.mode = 0;
+					this.indicator.element.set("text",
+						this.indicator.icon[this.indicator.mode]);
+				}.bind(this),
 				draw: function() {
 					this.indicator.element.set("text",
 						this.indicator.icon[this.indicator.mode]);
@@ -53,9 +58,13 @@ Implements a temporary display for testing purposes.
 			this.entryLine = new Element("input", {
 				id: "entryLine",
 				type: "text",
+				autofocus: "autofocus",
 				events: {
 					keypress: function(e) {
-						if (e.key == "enter") this.exec(e.target.value);
+						if (e.key == "enter") {
+							this.exec(e.target.value);
+							e.target.value = "";
+						}
 					}.bind(this)
 				}
 			});
@@ -65,6 +74,14 @@ Implements a temporary display for testing purposes.
 				this.indicator.element,
 				this.entryLine
 			);
+
+			// Handle keyboard shortcuts even while in text boxes
+			key.filter = function() { return true; };
+
+			key("tab", function(e, h) {
+				e.preventDefault();
+				this.indicator.next();
+			}.bind(this))
 		},
 
 		log: [],
@@ -78,11 +95,13 @@ Implements a temporary display for testing purposes.
 			);
 		},
 
-		print: function(line) {
-			this.log.push(line);
-			this.readout.set("text",
-				this.log.slice(this.options.readoutLength * -1).join("\n")
-			);
+		print: function() {
+			Array.each(arguments, function(line) {
+				this.log.push(line);
+				this.readout.set("text",
+					this.log.slice(this.options.readoutLength * -1).join("\n")
+				);
+			}, this);
 		},
 
 		setWizard: function(value) {
@@ -93,6 +112,6 @@ Implements a temporary display for testing purposes.
 		}
 	});
 
-	window.Display = Display;
+	global.Display = Display;
 
-})();
+})(this);
