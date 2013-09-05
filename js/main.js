@@ -15,6 +15,9 @@ window.addEvent("domready", function() {
 	// Main display
 	window.co = new Display($("main"), {});
 
+	// Environment
+	window.env = new Environment({ sc: sc });
+
 	// Basic command environment
 	window.commenv = new CommEnv({
 		"inv": function(args) {
@@ -26,11 +29,12 @@ window.addEvent("domready", function() {
 		}
 	});
 
-	// Environment
-	window.env = new Environment({ sc: sc });
-
 	// Temporary starting location
 	var mainroom = env.get(0);
+
+	sc.addEvent("chat", function(e) {
+		co.print("<" + e.user + "> " + e.message);
+	});
 
 	co.addEvent("command", function(e) {
 		// I know. Eww. A switch statement. Sue me.
@@ -42,7 +46,7 @@ window.addEvent("domready", function() {
 				break;
 
 			case 1:
-				co.print("<user> " + e.command);
+				sc.chat(e.command);
 				break;
 
 			case 2:

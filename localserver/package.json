@@ -3,5 +3,7 @@
 	"description": "A quick base for local `text` development",
 	"dependencies": {
 		"node-static": "*"
+		"redis": "*"
+		"ws": "*"
 	}
 }

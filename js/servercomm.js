@@ -18,9 +18,15 @@ Implements... server communication...
 
 		ws: {},
 
+		// {{{ Initialize
 		initialize: function(options) {
 			this.setOptions(options);
 			this.ws.fn = ServerComm.wsfn;
+
+			// Bind packet handlers to this so they can emit events
+			Object.each(this.ws.fn, function(i, k, o) {
+				o[k] = i.bind(this)
+			}, this);
 
 			// Extract hostname just because
 			var hostname = document.URL.split("/")[2];
@@ -35,7 +41,7 @@ Implements... server communication...
 			};
 
 			this.ws.sock.onmessage = function(e) {
-				console.log("Server: " + e.data)
+				//console.log("Server: " + e.data)
 				var d;
 				try {
 					d = JSON.parse(e.data);
@@ -51,7 +57,7 @@ Implements... server communication...
 			this.ws.sock.onclose = function() {
 				console.log("Socket disconnected");
 			};
-		},
+		}, // }}}
 
 		load: function(id, callback) {
 			var req = new Request({
@@ -64,6 +70,15 @@ Implements... server communication...
 			});
 
 			req.send();
+		},
+
+		chat: function(message) {
+			var p = new ServerComm.WSPacket({
+				type: "chat",
+				message: message
+			});
+
+			this.ws.sock.send(p.str());
 		}
 	});
 
@@ -87,6 +102,8 @@ Implements... server communication...
 		}
 	}); // }}}
 
+	// {{{ Packet Handlers
+
 	// {{{ Ping
 	ServerComm.wsfn.ping = function(data, sock) {
 		var reply = new ServerComm.WSPacket({
@@ -94,5 +111,13 @@ Implements... server communication...
 		});
 		sock.send(reply.str());
 	} // }}}
+
+	// {{{ Chat
+	ServerComm.wsfn.chat = function(data, sock) {
+		//console.log(data);
+		this.fireEvent("chat", data);
+	} // }}}
+
+	// }}}
 
 })(this);

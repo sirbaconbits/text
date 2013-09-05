@@ -3,7 +3,7 @@
 ## index.js
 
 This file is based heavily off of how my custom webserver works.
-Modification is only recommended if you actually know what you're doing.
+Modification of the base is only recommended if you actually know what you're doing.
 
 */
 
@@ -20,6 +20,7 @@ var ws = require("ws");
 var wss = new ws.Server({ port: 9001 });
 // }}}
 
+// {{{ HTTP
 exports.handle = function(req, res, _404, postdata) {
 	var path = url.parse(req.url).pathname.split("/");
 
@@ -45,9 +46,8 @@ exports.handle = function(req, res, _404, postdata) {
 		rreq.exec(function(e, data) {
 			var obj = {};
 
-			for (var i=0;i<dl.length;i++) {
-				obj[dl[i]] = data[i];
-			}
+			// Assemble reply
+			for (var i=0;i<dl.length;i++) obj[dl[i]] = data[i];
 
 			// TODO CORS
 			res.end(JSON.stringify(obj));
@@ -58,18 +58,73 @@ exports.handle = function(req, res, _404, postdata) {
 			if (e && (e.status === 404)) { _404(req, res); };
 		}); // }}}
 	}
-};
+}; // }}}
 
 // {{{ WebSockets
-wss.on('connection', function(s) {
-    s.on('message', function(m) {
-	console.log(m);
-	try {
-		var d = JSON.parse(m);
-	} catch (e) {
-		s.send('{"type":"error"}');
-	}
-    });
+var connlist = [];
 
-    s.send('{"type":"ping"}');
-}); // }}}
+// {{{ My ghetto-fabulous connection managing mechanism.
+// If you figure out a better way to do this,
+// please, PLEASE implement it.
+function newConn() {
+	for (var i=0;i<connlist.length;i++) {
+		if (connlist[i] == null) break;
+	}
+	console.log("New index: " + i);
+	return i;
+};
+
+function rmConn(id) {
+	connlist[id] = null;
+}; // }}}
+
+wss.on('connection', function(s) {
+	var id = newConn();
+	connlist[id] = {
+		sock: s
+	};
+
+	console.log(id + " connected.");
+
+	// {{{ Message Handler
+	s.on('message', function(m) {
+		console.log(m);
+		try {
+			var d = JSON.parse(m);
+		} catch (e) {
+			s.send('{"type":"error"}');
+			return;
+		}
+
+		if ( WShandlers[d.type] ) {
+			WShandlers[d.type](d, s, id);
+		}
+	}); // }}}
+
+	s.on('close', function() {
+		rmConn(id);
+		console.log(id + " disconnected.");
+	});
+
+	s.send('{"type":"ping"}');
+	s.send('{"type":"chat","user":"server","message":"Hello, chat!"}');
+});
+
+// {{{ Packet Handlers
+var WShandlers = {
+	chat: function(data, sock, id) {
+		for (var i=0;i<connlist.length;i++) {
+			if (connlist[i] == null) continue;
+
+			var p = {
+				type: "chat",
+				user: "user" + id,
+				message: data.message
+			};
+
+			connlist[i].sock.send(JSON.stringify(p))
+		}
+	}
+}; // }}}
+
+// }}}
